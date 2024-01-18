@@ -12,6 +12,11 @@
   --color-red-dark: #e03131;
 }
 
+$bp-large: 78.15em; // 1250px
+$bp-medium: 61.25em; // 980px
+$bp-small: 37.5em; // 600px
+$bp-smallest: 31.25em; // 500px
+
 * {
   margin: 0;
   padding: 0;
@@ -42,16 +47,22 @@ body {
 }
 
 .main {
-  margin-top: 2.4rem;
+  // margin-top: 2.4rem;
+  // display: flex;
+  // justify-content: center;
+
   height: calc(100vh - 7.2rem - 3 * 2.4rem);
-  display: flex;
   gap: 2.4rem;
-  justify-content: center;
+  margin: 2.4rem auto;
+  max-width: 120rem;
+
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 }
 
 .box {
-  width: 42rem;
-  max-width: 42rem;
+  // width: 42rem;
+  // max-width: 42rem;
   background-color: var(--color-background-500);
   border-radius: 0.9rem;
   overflow: scroll;
@@ -80,10 +91,11 @@ body {
   padding: 1.1rem 1.6rem;
   font-size: 1.8rem;
   border-radius: 0.7rem;
-  width: 40rem;
+  width: 30rem;
   color: var(--color-text);
 
   background-color: var(--color-primary-light);
+  margin: 0 5rem;
 }
 
 .search::placeholder {
