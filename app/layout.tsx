@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./styles/global.scss";
+import { NoSsr } from "./components/NoSsr.jsx";
 
 export const metadata: Metadata = {
   title: "nextMovie",
@@ -12,8 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <NoSsr>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </NoSsr>
   );
 }

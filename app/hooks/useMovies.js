@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
-import { API_URL, API_KEY } from "../utils/config";
+import { API_URL, API_KEY } from "../utils/config.js";
+import { keyLowering } from "../utils/helpers.js";
 
 export function useMovies(query) {
   const [movies, setMovies] = useState([]);
@@ -29,10 +30,15 @@ export function useMovies(query) {
           if (data.Response === "False") {
             throw new Error("Movie not found");
           }
-          setMovies(data.Search);
+          const mappedSearch = data.Search.map((searchItem) =>
+            keyLowering(searchItem)
+          );
+
+          setMovies(mappedSearch);
           setError("");
         } catch (err) {
           if (err.name !== "AbortError") {
+            console.log(err);
             setError(err.message);
           }
         } finally {

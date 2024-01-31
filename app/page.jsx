@@ -1,77 +1,238 @@
 "use client";
 
-import Image from "next/image";
+import { useRef, useState } from "react";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  faStar as faStarSolid,
+  faBookmark as faBookmarkSolid,
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { average } from "./utils/helpers.js";
+import { useKey } from "./hooks/useKey.js";
+import { useMovies } from "./hooks/useMovies.js";
+import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
+import useMediaQuery from "./hooks/useMediaQuery.js";
 
-import { useKey } from "./components/useKey.js";
-import { useMovies } from "./components/useMovies.js";
-import { useLocalStorageState } from "./components/useLocalStorageState.js";
-import MovieDetails from "./components/MovieDetails.js";
-import Loader from "./components/Loader.js";
+import { NoSsr } from "./components/NoSsr.jsx";
+import MovieDetailsView from "./components/MovieDetailsView.jsx";
+import Loader from "./components/Loader.jsx";
+import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
 
 export default function Home() {
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
   const { movies, isLoading, error } = useMovies(query);
+  const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
+  const [rated, setRated] = useLocalStorageState([], "rated");
 
-  const [watched, setWatched] = useLocalStorageState([], "watched");
+  const [panelOpened, setPanelOpened] = useState({
+    watchlisted: true,
+    rated: false,
+  });
+
+  const [previousPanelOpened, setPreviousPanelOpened] = useState({});
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
+    if (!isLargeScreen) {
+      setPreviousPanelOpened(panelOpened);
+
+      setPanelOpened({ watchlisted: false, rated: false });
+    }
   }
 
   function handleCloseMovie() {
+    console.log("previousPanelOpened after closing movie", previousPanelOpened);
     setSelectedId(null);
+    // if (!isLargeScreen) {
+    //   setPanelOpened({ watchlisted: false, rated: false });
+    // } else {
+    //   setPanelOpened({ watchlisted: true, rated: false });
+    // }
+    if (!isLargeScreen) {
+      setPanelOpened(previousPanelOpened);
+    }
   }
 
-  function handleAddWatched(movie) {
-    setWatched((watched) => [...watched, movie]);
+  function handleNavBtn(type) {
+    if (type === "Ratings") {
+      setSelectedId(null);
+      setPanelOpened({ watchlisted: false, rated: true });
+
+      setQuery("");
+    }
+
+    if (type === "Watchlist") {
+      setSelectedId(null);
+      setPanelOpened({ watchlisted: true, rated: false });
+
+      setQuery("");
+    }
   }
 
-  function handleDeletedWatched(id) {
-    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  function handleAddWatchlisted(movie) {
+    setWatchlisted((watchlisted) => [...watchlisted, movie]);
   }
+
+  function handleAddRated(movie) {
+    // filter out movie in case if it is already in the list, and add it again
+    setRated((rated) => [
+      ...rated.filter((ratedMovie) => ratedMovie.imdbID !== movie.imdbID),
+      movie,
+    ]);
+  }
+
+  function handleDeletedWatchlisted(id) {
+    setWatchlisted((watchlisted) =>
+      watchlisted.filter((movie) => movie.imdbID !== id)
+    );
+  }
+
+  const isMobileScreen = useMediaQuery("(max-width: 500px)");
+  const isMediumScreen = useMediaQuery("(max-width: 960px)") && !isMobileScreen; //isSmall
+  const isLargeScreen = useMediaQuery("(min-width: 960px)");
+
+  const showRatingsList = panelOpened.rated && !query;
+  const showWatchlist = panelOpened.watchlisted && !query;
+  const showMovieDetails = !!selectedId;
+  const showSearchResults =
+    !!query &&
+    !showRatingsList &&
+    !showWatchlist &&
+    (!isLargeScreen ? !selectedId : true);
+  const showMovieDetailsPlaceholder = isLargeScreen && !showMovieDetails;
+
+  //console.log({ isLargeScreen, isMediumScreen, isMobileScreen });
 
   return (
-    <>
+    <NoSsr>
       <NavBar>
-        <Logo />
-        <Search query={query} setQuery={setQuery} />
+        <Logo isMobileScreen={isMobileScreen} />
+        <Search
+          isMediumScreen={isMediumScreen}
+          query={query}
+          setQuery={(query) => {
+            setQuery(query);
+            setPanelOpened({ watchlisted: !query, rated: false });
+            if (!isLargeScreen) {
+              setSelectedId(null);
+            }
+          }}
+        />
+
+        <NavBtn
+          isMobileScreen={isMobileScreen}
+          rated={rated}
+          onNavBar={handleNavBtn}
+          panelOpened={panelOpened}
+          name={"Ratings"}
+        />
+
+        <NavBtn
+          isMobileScreen={isMobileScreen}
+          watchlisted={watchlisted}
+          onNavBar={handleNavBtn}
+          panelOpened={panelOpened}
+          name={"Watchlist"}
+        />
+
+        {/* <button className="nav-bar__btn" onClick={handleRatingsListBtn}>
+          <FontAwesomeIcon
+            className="btn__icon"
+            icon={rated.length > 0 ? faStarSolid : faStar}
+          />
+          <span
+            className={
+              "btn__label " + (panelOpened.rated ? "btn__label--pressed" : "")
+            }
+          >
+            Ratings
+          </span>
+        </button>
+
+        <button className="nav-bar__btn " onClick={handleWatchlistedBtn}>
+          <FontAwesomeIcon
+            className="btn__icon"
+            icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
+          />
+          <span
+            className={
+              "btn__label " +
+              (panelOpened.watchlisted ? "btn__label--pressed" : "")
+            }
+          >
+            Watchlist
+          </span>
+        </button> */}
       </NavBar>
 
       <Main>
-        <Box>
-          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
-          {isLoading && <Loader />}
-          {!isLoading && !error && (
-            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
-          )}
-          {error && <ErrorMessage message={error} />}
-        </Box>
-        <Box>
-          {selectedId ? (
-            <MovieDetails
+        {showSearchResults && (
+          <Box>
+            {isLoading && <Loader />}
+            {error && <ErrorMessage message={error} />}
+            {!isLoading && !error && (
+              <MoviesList
+                movies={movies}
+                onSelectMovie={handleSelectMovie}
+                isSearchResult={true}
+              />
+            )}
+          </Box>
+        )}
+        {showWatchlist && (
+          <Box>
+            <MoviesSummary
+              title={"Watchlisted Movies"}
+              movies={watchlisted}
+              isUsrRatingVisible={false}
+            />
+            <MoviesList
+              movies={watchlisted}
+              onDeleteWatchlisted={handleDeletedWatchlisted}
+              onSelectMovie={handleSelectMovie}
+              isRemovable={true}
+              isUsrRatingVisible={false}
+            />
+          </Box>
+        )}
+        {showRatingsList && (
+          <Box>
+            <MoviesSummary
+              title={"Rated Movies"}
+              movies={rated}
+              isUsrRatingVisible={true}
+            />
+            <MoviesList
+              movies={rated}
+              onSelectMovie={handleSelectMovie}
+              isRemovable={false}
+              isUsrRatingVisible={true}
+            />
+          </Box>
+        )}
+        {showMovieDetails && (
+          <Box>
+            <MovieDetailsView
+              // panelOpened={previousPanelOpened}
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
-              onAddWatched={handleAddWatched}
-              watched={watched}
+              onAddWatchlisted={handleAddWatchlisted}
+              onDeleteWatchlisted={handleDeletedWatchlisted}
+              onAddRated={handleAddRated}
+              watchlisted={watchlisted}
+              rated={rated}
+              isLargeScreen={isLargeScreen}
+              isMediumScreen={isMediumScreen}
+              isMobileScreen={isMobileScreen}
             />
-          ) : (
-            <>
-              <WatchedSummary watched={watched} />
-              <WatchedMoviesList
-                watched={watched}
-                onDeleteWatched={handleDeletedWatched}
-              />
-            </>
-          )}
-        </Box>
+          </Box>
+        )}
+        {showMovieDetailsPlaceholder && <Box />}
       </Main>
-    </>
+    </NoSsr>
   );
 }
 
@@ -84,10 +245,13 @@ function ErrorMessage({ message }) {
   );
 }
 
-function Logo() {
+function Logo({ isMobileScreen }) {
+  const svgPath =
+    "img/nextMovie_logo" + (isMobileScreen ? "_mob" : "") + ".svg";
+
   return (
     <a href="/" id="logo-link">
-      <img src="img/nextMovie_logo.svg" alt="Logo" class="header__logo" />
+      <img src={svgPath} alt="Logo" className="header__logo" />
     </a>
   );
 }
@@ -96,7 +260,59 @@ function NavBar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
 }
 
-function Search({ query, setQuery }) {
+function NavBtn({
+  isMobileScreen,
+  rated,
+  watchlisted,
+  onNavBar,
+  panelOpened,
+  name,
+}) {
+  return (
+    <button className="nav-bar__btn" onClick={() => onNavBar(name)}>
+      {rated && (
+        <>
+          <FontAwesomeIcon
+            className={
+              "btn__icon " + (panelOpened.rated ? "btn__icon--pressed" : "")
+            }
+            icon={rated.length > 0 ? faStarSolid : faStar}
+          />
+
+          <span
+            className={
+              "btn__label " + (panelOpened.rated ? "btn__label--pressed" : "")
+            }
+          >
+            {isMobileScreen || name}
+          </span>
+        </>
+      )}
+      {watchlisted && (
+        <>
+          <FontAwesomeIcon
+            className={
+              "btn__icon " +
+              (panelOpened.watchlisted ? "btn__icon--pressed" : "")
+            }
+            icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
+          />
+          <span
+            className={
+              "btn__label " +
+              (panelOpened.watchlisted ? "btn__label--pressed" : "")
+            }
+          >
+            {isMobileScreen || name}
+          </span>
+        </>
+      )}
+    </button>
+  );
+}
+
+//https://flammanatla.github.io/portfolio/cinesearch/dist/?q=harry
+function Search({ query, setQuery, isMediumScreen }) {
   const inputEl = useRef(null);
 
   useKey("Enter", function () {
@@ -112,10 +328,13 @@ function Search({ query, setQuery }) {
     <input
       className="search"
       type="text"
-      placeholder="Search over 300 000 movies..."
+      placeholder={
+        isMediumScreen ? "search here..." : "search over 300 000 movies..."
+      }
       value={query}
       onChange={(e) => setQuery(e.target.value)}
       ref={inputEl}
+      id="search-input"
     />
   );
 }
@@ -125,111 +344,5 @@ function Main({ children }) {
 }
 
 function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "–" : "+"}
-      </button>
-      {isOpen && children}
-    </div>
-  );
-}
-
-function MovieList({ movies, onSelectMovie }) {
-  return (
-    <ul className="list list-movies">
-      {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
-      ))}
-    </ul>
-  );
-}
-
-function Movie({ movie, onSelectMovie }) {
-  return (
-    <li onClick={() => onSelectMovie(movie.imdbID)}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>{movie.Year}</p>
-        <p>{movie.Type}</p>
-      </div>
-    </li>
-  );
-}
-
-function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
-
-  return (
-    <div className="summary">
-      <h2>Movies you watched</h2>
-      <div>
-        <p>
-          <span>#️⃣</span>
-          <span>{watched.length} movies</span>
-        </p>
-        <p>
-          <span>⭐️</span>
-          <span>{avgImdbRating.toFixed(2)}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{avgUserRating.toFixed(2)}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{avgRuntime.toFixed(0)} min</span>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function WatchedMoviesList({ watched, onDeleteWatched }) {
-  return (
-    <ul className="list">
-      {watched.map((movie) => (
-        <WatchedMovie
-          movie={movie}
-          key={movie.imdbID}
-          onDeleteWatched={onDeleteWatched}
-        />
-      ))}
-    </ul>
-  );
-}
-
-function WatchedMovie({ movie, onDeleteWatched }) {
-  return (
-    <li>
-      <img src={movie.poster} alt={`${movie.title} poster`} />
-      <h3>{movie.title}</h3>
-      <div>
-        <p>
-          <span>⭐️</span>
-          <span>{movie.imdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{movie.userRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{movie.runtime} min</span>
-        </p>
-
-        <button
-          className="btn-delete"
-          onClick={() => onDeleteWatched(movie.imdbID)}
-        >
-          X
-        </button>
-      </div>
-    </li>
-  );
+  return <div className="box">{children}</div>;
 }
