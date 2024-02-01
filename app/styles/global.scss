@@ -84,7 +84,7 @@ body {
         color: #f5c519;
         height: 2rem;
         width: 2rem;
-        &--pressed {
+        &--active {
           color: var(--color-text-dark);
         }
       }
@@ -95,8 +95,12 @@ body {
         letter-spacing: 0.0675rem;
         font-size: 1.5rem;
 
-        &--pressed {
+        &--active {
           color: var(--color-text-dark);
+        }
+
+        @media only screen and (max-width: $bp-mobile) {
+          display: none;
         }
       }
     }

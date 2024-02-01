@@ -111,7 +111,7 @@ export default function Home() {
       <NavBar>
         <Logo isMobileScreen={isMobileScreen} />
         <Search
-          isMediumScreen={isMediumScreen}
+          isShrinked={!isLargeScreen}
           query={query}
           setQuery={(query) => {
             setQuery(query);
@@ -123,49 +123,18 @@ export default function Home() {
         />
 
         <NavBtn
-          isMobileScreen={isMobileScreen}
-          rated={rated}
-          onNavBar={handleNavBtn}
-          panelOpened={panelOpened}
           name={"Ratings"}
+          onNavBar={handleNavBtn}
+          isActive={panelOpened.rated}
+          icon={rated.length > 0 ? faStarSolid : faStar}
         />
 
         <NavBtn
-          isMobileScreen={isMobileScreen}
-          watchlisted={watchlisted}
-          onNavBar={handleNavBtn}
-          panelOpened={panelOpened}
           name={"Watchlist"}
+          onNavBar={handleNavBtn}
+          isActive={panelOpened.watchlisted}
+          icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
         />
-
-        {/* <button className="nav-bar__btn" onClick={handleRatingsListBtn}>
-          <FontAwesomeIcon
-            className="btn__icon"
-            icon={rated.length > 0 ? faStarSolid : faStar}
-          />
-          <span
-            className={
-              "btn__label " + (panelOpened.rated ? "btn__label--pressed" : "")
-            }
-          >
-            Ratings
-          </span>
-        </button>
-
-        <button className="nav-bar__btn " onClick={handleWatchlistedBtn}>
-          <FontAwesomeIcon
-            className="btn__icon"
-            icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
-          />
-          <span
-            className={
-              "btn__label " +
-              (panelOpened.watchlisted ? "btn__label--pressed" : "")
-            }
-          >
-            Watchlist
-          </span>
-        </button> */}
       </NavBar>
 
       <Main>
@@ -260,59 +229,22 @@ function NavBar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
 }
 
-function NavBtn({
-  isMobileScreen,
-  rated,
-  watchlisted,
-  onNavBar,
-  panelOpened,
-  name,
-}) {
+function NavBtn({ icon, isActive, onNavBar, name }) {
   return (
     <button className="nav-bar__btn" onClick={() => onNavBar(name)}>
-      {rated && (
-        <>
-          <FontAwesomeIcon
-            className={
-              "btn__icon " + (panelOpened.rated ? "btn__icon--pressed" : "")
-            }
-            icon={rated.length > 0 ? faStarSolid : faStar}
-          />
-
-          <span
-            className={
-              "btn__label " + (panelOpened.rated ? "btn__label--pressed" : "")
-            }
-          >
-            {isMobileScreen || name}
-          </span>
-        </>
-      )}
-      {watchlisted && (
-        <>
-          <FontAwesomeIcon
-            className={
-              "btn__icon " +
-              (panelOpened.watchlisted ? "btn__icon--pressed" : "")
-            }
-            icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
-          />
-          <span
-            className={
-              "btn__label " +
-              (panelOpened.watchlisted ? "btn__label--pressed" : "")
-            }
-          >
-            {isMobileScreen || name}
-          </span>
-        </>
-      )}
+      <FontAwesomeIcon
+        className={"btn__icon " + (isActive ? "btn__icon--active" : "")}
+        icon={icon}
+      />
+      <span className={"btn__label " + (isActive ? "btn__label--active" : "")}>
+        {name}
+      </span>
     </button>
   );
 }
 
 //https://flammanatla.github.io/portfolio/cinesearch/dist/?q=harry
-function Search({ query, setQuery, isMediumScreen }) {
+function Search({ query, setQuery, isShrinked }) {
   const inputEl = useRef(null);
 
   useKey("Enter", function () {
@@ -329,7 +261,7 @@ function Search({ query, setQuery, isMediumScreen }) {
       className="search"
       type="text"
       placeholder={
-        isMediumScreen ? "search here..." : "search over 300 000 movies..."
+        isShrinked ? "search here..." : "search over 300 000 movies..."
       }
       value={query}
       onChange={(e) => setQuery(e.target.value)}
