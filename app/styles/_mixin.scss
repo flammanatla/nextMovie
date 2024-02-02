@@ -1,0 +1,33 @@
+$bp-large: 70em; // 1120px
+$bp-medium: 60em; // 960px
+$bp-mobile: 31.25em; // 500px
+
+@mixin for-large-down {
+  @media (max-width: $bp-large) {
+    @content;
+  }
+}
+
+@mixin for-medium-to-large {
+  @media (min-width: $bp-medium) and (max-width: $bp-large) {
+    @content;
+  }
+}
+
+@mixin for-medium-down {
+  @media (max-width: $bp-medium) {
+    @content;
+  }
+}
+
+@mixin for-medium-up {
+  @media (min-width: $bp-medium) {
+    @content;
+  }
+}
+
+@mixin for-mobile-down {
+  @media (max-width: $bp-mobile) {
+    @content;
+  }
+}

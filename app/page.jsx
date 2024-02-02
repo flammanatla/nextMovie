@@ -1,22 +1,22 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   faStar as faStarSolid,
   faBookmark as faBookmarkSolid,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useKey } from "./hooks/useKey.js";
 import { useMovies } from "./hooks/useMovies.js";
 import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
-import useMediaQuery from "./hooks/useMediaQuery.js";
+import { useMediaQuery } from "./hooks/useMediaQuery.js";
 
 import { NoSsr } from "./components/NoSsr.jsx";
-import MovieDetailsView from "./components/MovieDetailsView.jsx";
 import Loader from "./components/Loader.jsx";
+import Search from "./components/Search.jsx";
+import NavBtn from "./components/NavBtn.jsx";
+import MovieDetailsView from "./components/MovieDetailsView.jsx";
 import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
 
 export default function Home() {
@@ -34,41 +34,44 @@ export default function Home() {
 
   const [previousPanelOpened, setPreviousPanelOpened] = useState({});
 
+  function handleQuery(query) {
+    setQuery(query);
+    // watchlisted is a default opened panel,
+    // therefore we unselect it when query is entered, and select it back when query is emptied
+    setPanelOpened({ watchlisted: !query, rated: false });
+
+    if (!isLargeScreen) {
+      setSelectedId(null);
+    }
+  }
+
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
+
     if (!isLargeScreen) {
       setPreviousPanelOpened(panelOpened);
-
       setPanelOpened({ watchlisted: false, rated: false });
     }
   }
 
   function handleCloseMovie() {
-    console.log("previousPanelOpened after closing movie", previousPanelOpened);
     setSelectedId(null);
-    // if (!isLargeScreen) {
-    //   setPanelOpened({ watchlisted: false, rated: false });
-    // } else {
-    //   setPanelOpened({ watchlisted: true, rated: false });
-    // }
+
     if (!isLargeScreen) {
       setPanelOpened(previousPanelOpened);
     }
   }
 
   function handleNavBtn(type) {
-    if (type === "Ratings") {
-      setSelectedId(null);
-      setPanelOpened({ watchlisted: false, rated: true });
+    setSelectedId(null);
+    setQuery("");
 
-      setQuery("");
+    if (type === "Ratings") {
+      setPanelOpened({ watchlisted: false, rated: true });
     }
 
     if (type === "Watchlist") {
-      setSelectedId(null);
       setPanelOpened({ watchlisted: true, rated: false });
-
-      setQuery("");
     }
   }
 
@@ -90,8 +93,9 @@ export default function Home() {
     );
   }
 
+  // warning - if you update these numbers, you should also update them in _mixin.scss
   const isMobileScreen = useMediaQuery("(max-width: 500px)");
-  const isMediumScreen = useMediaQuery("(max-width: 960px)") && !isMobileScreen; //isSmall
+  const isMediumScreen = useMediaQuery("(max-width: 960px)") && !isMobileScreen;
   const isLargeScreen = useMediaQuery("(min-width: 960px)");
 
   const showRatingsList = panelOpened.rated && !query;
@@ -104,22 +108,14 @@ export default function Home() {
     (!isLargeScreen ? !selectedId : true);
   const showMovieDetailsPlaceholder = isLargeScreen && !showMovieDetails;
 
-  //console.log({ isLargeScreen, isMediumScreen, isMobileScreen });
-
   return (
     <NoSsr>
-      <NavBar>
+      <nav className="nav-bar">
         <Logo isMobileScreen={isMobileScreen} />
         <Search
           isShrinked={!isLargeScreen}
           query={query}
-          setQuery={(query) => {
-            setQuery(query);
-            setPanelOpened({ watchlisted: !query, rated: false });
-            if (!isLargeScreen) {
-              setSelectedId(null);
-            }
-          }}
+          setQuery={handleQuery}
         />
 
         <NavBtn
@@ -135,11 +131,11 @@ export default function Home() {
           isActive={panelOpened.watchlisted}
           icon={watchlisted.length > 0 ? faBookmarkSolid : faBookmark}
         />
-      </NavBar>
+      </nav>
 
-      <Main>
+      <main className="main">
         {showSearchResults && (
-          <Box>
+          <div className="box">
             {isLoading && <Loader />}
             {error && <ErrorMessage message={error} />}
             {!isLoading && !error && (
@@ -149,10 +145,10 @@ export default function Home() {
                 isSearchResult={true}
               />
             )}
-          </Box>
+          </div>
         )}
         {showWatchlist && (
-          <Box>
+          <div className="box">
             <MoviesSummary
               title={"Watchlisted Movies"}
               movies={watchlisted}
@@ -165,10 +161,10 @@ export default function Home() {
               isRemovable={true}
               isUsrRatingVisible={false}
             />
-          </Box>
+          </div>
         )}
         {showRatingsList && (
-          <Box>
+          <div className="box">
             <MoviesSummary
               title={"Rated Movies"}
               movies={rated}
@@ -180,12 +176,11 @@ export default function Home() {
               isRemovable={false}
               isUsrRatingVisible={true}
             />
-          </Box>
+          </div>
         )}
         {showMovieDetails && (
-          <Box>
+          <div className="box">
             <MovieDetailsView
-              // panelOpened={previousPanelOpened}
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
               onAddWatchlisted={handleAddWatchlisted}
@@ -197,10 +192,10 @@ export default function Home() {
               isMediumScreen={isMediumScreen}
               isMobileScreen={isMobileScreen}
             />
-          </Box>
+          </div>
         )}
-        {showMovieDetailsPlaceholder && <Box />}
-      </Main>
+        {showMovieDetailsPlaceholder && <div className="box" />}
+      </main>
     </NoSsr>
   );
 }
@@ -223,58 +218,4 @@ function Logo({ isMobileScreen }) {
       <img src={svgPath} alt="Logo" className="header__logo" />
     </a>
   );
-}
-
-function NavBar({ children }) {
-  return <nav className="nav-bar">{children}</nav>;
-}
-
-function NavBtn({ icon, isActive, onNavBar, name }) {
-  return (
-    <button className="nav-bar__btn" onClick={() => onNavBar(name)}>
-      <FontAwesomeIcon
-        className={"btn__icon " + (isActive ? "btn__icon--active" : "")}
-        icon={icon}
-      />
-      <span className={"btn__label " + (isActive ? "btn__label--active" : "")}>
-        {name}
-      </span>
-    </button>
-  );
-}
-
-//https://flammanatla.github.io/portfolio/cinesearch/dist/?q=harry
-function Search({ query, setQuery, isShrinked }) {
-  const inputEl = useRef(null);
-
-  useKey("Enter", function () {
-    if (document.activeElement === inputEl.current) {
-      return;
-    }
-
-    inputEl.current.focus();
-    setQuery("");
-  });
-
-  return (
-    <input
-      className="search"
-      type="text"
-      placeholder={
-        isShrinked ? "search here..." : "search over 300 000 movies..."
-      }
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-      ref={inputEl}
-      id="search-input"
-    />
-  );
-}
-
-function Main({ children }) {
-  return <main className="main">{children}</main>;
-}
-
-function Box({ children }) {
-  return <div className="box">{children}</div>;
 }
