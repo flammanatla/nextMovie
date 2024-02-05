@@ -12,7 +12,6 @@ import { useMovies } from "./hooks/useMovies.js";
 import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 
-import { NoSsr } from "./components/NoSsr.jsx";
 import Loader from "./components/Loader.jsx";
 import Search from "./components/Search.jsx";
 import NavBtn from "./components/NavBtn.jsx";
@@ -191,7 +190,6 @@ export default function Home() {
               watchlisted={watchlisted}
               rated={rated}
               isLargeScreen={isLargeScreen}
-              isMediumScreen={isMediumScreen}
               isMobileScreen={isMobileScreen}
             />
           </div>

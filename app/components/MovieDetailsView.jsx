@@ -15,7 +15,6 @@ export default function MovieDetailsView({
   watchlisted,
   rated,
   isLargeScreen,
-  isMediumScreen,
   isMobileScreen,
 }) {
   const { movie, isLoading } = useMovieDetails(selectedId);
@@ -116,15 +115,17 @@ export default function MovieDetailsView({
           <p>{year}</p>
           <p className="labels">
             {genre.split(",").map((label) => (
-              <label className="label">{label.toLowerCase()}</label>
+              <label className="label" key={label}>
+                {label.toLowerCase()}
+              </label>
             ))}
           </p>
           <ul>
-            <li key={"Runtime"}>Runtime: {runtime}</li>
-            <li key={"Writer"}>Writer: {writer}</li>
-            <li key={"Director"}>Director: {director}</li>
-            <li key={"Actors"}>Stars: {actors}</li>
-            <li key={"Country"}>Country: {country}</li>
+            <li key="Runtime">Runtime: {runtime}</li>
+            <li key="Writer">Writer: {writer}</li>
+            <li key="Director">Director: {director}</li>
+            <li key="Actors">Stars: {actors}</li>
+            <li key="Country">Country: {country}</li>
           </ul>
         </div>
 
@@ -162,7 +163,9 @@ export default function MovieDetailsView({
                 return parsedScores;
               })
               .map((rating) => (
-                <label className="label">{rating}</label>
+                <label className="label" key={rating}>
+                  {rating}
+                </label>
               ))}
           </div>
         </div>
