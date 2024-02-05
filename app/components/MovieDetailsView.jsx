@@ -120,11 +120,11 @@ export default function MovieDetailsView({
             ))}
           </p>
           <ul>
-            <li>Runtime: {runtime}</li>
-            <li>Writer: {writer}</li>
-            <li>Director: {director}</li>
-            <li>Stars: {actors}</li>
-            <li>Country: {country}</li>
+            <li key={"Runtime"}>Runtime: {runtime}</li>
+            <li key={"Writer"}>Writer: {writer}</li>
+            <li key={"Director"}>Director: {director}</li>
+            <li key={"Actors"}>Stars: {actors}</li>
+            <li key={"Country"}>Country: {country}</li>
           </ul>
         </div>
 

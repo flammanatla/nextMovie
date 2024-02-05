@@ -2,22 +2,22 @@
 
 import { useState, useEffect } from "react";
 
-export function useLocalStorageState(initialState, key) {
-  const [value, setValue] = useState(() => {
-    return localStorage.getItem(key) !== null
-      ? JSON.parse(localStorage.getItem(key))
-      : initialState;
-  });
+// export function useLocalStorageState(initialState, key) {
+//   const [value, setValue] = useState(() => {
+//     return localStorage.getItem(key) !== null
+//       ? JSON.parse(localStorage.getItem(key))
+//       : initialState;
+//   });
 
-  useEffect(
-    function () {
-      localStorage.setItem(key, JSON.stringify(value));
-    },
-    [value, key]
-  );
+//   useEffect(
+//     function () {
+//       localStorage.setItem(key, JSON.stringify(value));
+//     },
+//     [value, key]
+//   );
 
-  return [value, setValue];
-}
+//   return [value, setValue];
+// }
 
 // Uncaught Error: There was an error while hydrating.
 // export function useLocalStorageState(initialState, key) {
@@ -41,20 +41,29 @@ export function useLocalStorageState(initialState, key) {
 // }
 
 // endless re-rendering
-// export function useLocalStorageState(initialState, key) {
-//   const [value, setValue] = useState(initialState);
+export function useLocalStorageState(initialState, key) {
+  const [value, setValue] = useState(initialState);
+  const [isLoaded, setLoaded] = useState(false);
 
-//   useEffect(() => {
-//     const storedValue = localStorage.getItem(key);
-//     setValue(storedValue !== null ? JSON.parse(storedValue) : initialState);
-//   }, [initialState, key]);
+  useEffect(() => {
+    if (isLoaded) {
+      return;
+    }
 
-//   useEffect(
-//     function () {
-//       localStorage.setItem(key, JSON.stringify(value));
-//     },
-//     [value, key]
-//   );
+    setLoaded(true);
 
-//   return [value, setValue];
-// }
+    const storedValue = localStorage.getItem(key);
+
+    console.log("got from storage", { storedValue });
+    setValue(storedValue !== null ? JSON.parse(storedValue) : initialState);
+  }, [initialState, key]);
+
+  useEffect(
+    function () {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    [value, key]
+  );
+
+  return [value, setValue];
+}

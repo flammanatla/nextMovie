@@ -108,8 +108,10 @@ export default function Home() {
     (!isLargeScreen ? !selectedId : true);
   const showMovieDetailsPlaceholder = isLargeScreen && !showMovieDetails;
 
+  // console.log({ isLargeScreen, isMediumScreen, isMobileScreen });
+
   return (
-    <NoSsr>
+    <>
       <nav className="nav-bar">
         <Logo isMobileScreen={isMobileScreen} />
         <Search
@@ -196,7 +198,7 @@ export default function Home() {
         )}
         {showMovieDetailsPlaceholder && <div className="box" />}
       </main>
-    </NoSsr>
+    </>
   );
 }
 
