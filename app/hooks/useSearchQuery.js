@@ -1,7 +1,25 @@
-import { SEARCH_QUERY_PARAM } from "../utils/config";
+import { useState, useEffect } from "react";
 
-export const useSearchQuery = () => {
-  const searchQuery =
-    new URLSearchParams(window.location.search).get(SEARCH_QUERY_PARAM) || "";
-  return searchQuery;
+import { updateQueryParams } from "../utils/helpers.js";
+
+export const useURLParams = (key) => {
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    const searchQuery =
+      new URLSearchParams(window.location.search).get(key) || "";
+
+    setQuery(searchQuery);
+  }, []);
+
+  const setValue = (value) => {
+    try {
+      updateQueryParams(key, value || "");
+      setQuery(value);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return [query, setValue];
 };

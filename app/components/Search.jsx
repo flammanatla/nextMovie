@@ -1,13 +1,9 @@
 import { useRef } from "react";
 
 import { useKey } from "../hooks/useKey.js";
-// import { useSearchQuery } from "../hooks/useSearchQuery.js";
 
 //https://flammanatla.github.io/portfolio/cinesearch/dist/?q=harry
 export default function Search({ query, setQuery, isShrinked }) {
-  // const currentSearchQuery = useSearchQuery();
-  // const [searchString, setSearchString] = useState(currentSearchQuery);
-
   const inputEl = useRef(null);
 
   useKey("Enter", function () {

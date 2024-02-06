@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   faStar as faStarSolid,
@@ -11,6 +11,7 @@ import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
 import { useMovies } from "./hooks/useMovies.js";
 import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
+import { useURLParams } from "./hooks/useSearchQuery.js";
 
 import Loader from "./components/Loader.jsx";
 import Search from "./components/Search.jsx";
@@ -19,9 +20,9 @@ import MovieDetailsView from "./components/MovieDetailsView.jsx";
 import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
 
 export default function Home() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useURLParams("search");
+  // const [view, setView] = useURLParams("view");
   const [selectedId, setSelectedId] = useState(null);
-
   const { movies, isLoading, error } = useMovies(query);
   const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
   const [rated, setRated] = useLocalStorageState([], "rated");
@@ -31,13 +32,19 @@ export default function Home() {
     rated: false,
   });
 
-  const [previousPanelOpened, setPreviousPanelOpened] = useState({});
-
-  function handleQuery(query) {
-    setQuery(query);
+  useEffect(() => {
     // watchlisted is a default opened panel,
     // therefore we unselect it when query is entered, and select it back when query is emptied
-    setPanelOpened({ watchlisted: !query, rated: false });
+    if (query) {
+      setPanelOpened({ watchlisted: false, rated: false });
+    }
+  }, [query]);
+
+  const [previousPanelOpened, setPreviousPanelOpened] = useState({});
+
+  function handleQuery(newQuery) {
+    // setView("");
+    setQuery(newQuery);
 
     if (!isLargeScreen) {
       setSelectedId(null);
@@ -67,10 +74,12 @@ export default function Home() {
 
     if (type === "Ratings") {
       setPanelOpened({ watchlisted: false, rated: true });
+      // setView("ratings");
     }
 
     if (type === "Watchlist") {
       setPanelOpened({ watchlisted: true, rated: false });
+      // setView("watchlist");
     }
   }
 
@@ -106,8 +115,6 @@ export default function Home() {
     !showWatchlist &&
     (!isLargeScreen ? !selectedId : true);
   const showMovieDetailsPlaceholder = isLargeScreen && !showMovieDetails;
-
-  // console.log({ isLargeScreen, isMediumScreen, isMobileScreen });
 
   return (
     <>
