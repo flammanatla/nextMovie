@@ -3,23 +3,22 @@ import { useState, useEffect } from "react";
 import { updateQueryParams } from "../utils/helpers.js";
 
 export const useURLParams = (key) => {
-  const [query, setQuery] = useState("");
+  const [state, setState] = useState("");
 
   useEffect(() => {
     const searchQuery =
       new URLSearchParams(window.location.search).get(key) || "";
-
-    setQuery(searchQuery);
+    setState(searchQuery);
   }, []);
 
   const setValue = (value) => {
     try {
       updateQueryParams(key, value || "");
-      setQuery(value);
+      setState(value);
     } catch (error) {
       console.log(error);
     }
   };
 
-  return [query, setValue];
+  return [state, setValue];
 };

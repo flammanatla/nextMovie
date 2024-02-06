@@ -32,18 +32,22 @@ export default function Home() {
     rated: false,
   });
 
+  // useEffect(() => {
+  //   setPanelOpened({
+  //     watchlisted: view === "Watchlist",
+  //     rated: view === "Ratings",
+  //   });
+  // }, [view]);
+
   useEffect(() => {
     // watchlisted is a default opened panel,
     // therefore we unselect it when query is entered, and select it back when query is emptied
-    if (query) {
-      setPanelOpened({ watchlisted: false, rated: false });
-    }
+    setPanelOpened({ watchlisted: !query, rated: false });
   }, [query]);
 
   const [previousPanelOpened, setPreviousPanelOpened] = useState({});
 
   function handleQuery(newQuery) {
-    // setView("");
     setQuery(newQuery);
 
     if (!isLargeScreen) {
@@ -74,12 +78,10 @@ export default function Home() {
 
     if (type === "Ratings") {
       setPanelOpened({ watchlisted: false, rated: true });
-      // setView("ratings");
     }
 
     if (type === "Watchlist") {
       setPanelOpened({ watchlisted: true, rated: false });
-      // setView("watchlist");
     }
   }
 
