@@ -28,56 +28,55 @@ export function MoviesList({
 
 export function MoviePreview({
   movie,
-  onSelectMovie,
-  isRemovable,
   onDeleteWatchlisted,
+  isRemovable,
   isUsrRatingVisible,
+  onSelectMovie,
   isSearchResult,
 }) {
   return (
-    <li
-      className={"movie " + (isSearchResult ? "movie--searched" : "")}
-      onClick={() => onSelectMovie(movie.imdbID)}
-    >
-      <img
-        className="movie__poster"
-        src={movie.poster}
-        alt={`${movie.title} poster`}
-      />
-      <div className="movie__info">
-        <h3 className="title">{movie.title}</h3>
+    <li className="movie" onClick={() => onSelectMovie(movie.imdbID)}>
+      <a className="movie__link" href={"#" + movie.imdbID}>
+        <img
+          className="movie__poster"
+          src={movie.poster}
+          alt={`${movie.title} poster`}
+        />
+        <div className="movie__info">
+          <h3 className="title">{movie.title}</h3>
+          <div>
+            <p>{movie.year}</p>
+            <p className="text text--darker">{movie.type}</p>
+            {isSearchResult ? (
+              ""
+            ) : (
+              <p className="text text--darker">
+                Imdb Rating: {Number(movie.imdbRating)}
+              </p>
+            )}
+          </div>
+        </div>
         <div>
-          <p>{movie.year}</p>
-          <p className="text text--darker">{movie.type}</p>
-          {isSearchResult ? (
-            ""
+          {isUsrRatingVisible ? (
+            <button className="user-rating">{movie.userRating}</button>
           ) : (
-            <p className="text text--darker">
-              Imdb Rating: {Number(movie.imdbRating)}
-            </p>
+            <></>
+          )}
+          {isRemovable ? (
+            <button
+              className="btn-delete"
+              onClick={(e) => {
+                onDeleteWatchlisted(movie.imdbID);
+                e.stopPropagation();
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          ) : (
+            ""
           )}
         </div>
-      </div>
-      <div>
-        {isUsrRatingVisible ? (
-          <button className="user-rating">{movie.userRating}</button>
-        ) : (
-          <></>
-        )}
-        {isRemovable ? (
-          <button
-            className="btn-delete"
-            onClick={(e) => {
-              onDeleteWatchlisted(movie.imdbID);
-              e.stopPropagation();
-            }}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        ) : (
-          ""
-        )}
-      </div>
+      </a>
     </li>
   );
 }

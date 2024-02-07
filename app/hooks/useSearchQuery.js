@@ -9,7 +9,7 @@ export const useURLParams = (key) => {
     const searchQuery =
       new URLSearchParams(window.location.search).get(key) || "";
     setState(searchQuery);
-  }, []);
+  }, [key]);
 
   const setValue = (value) => {
     try {

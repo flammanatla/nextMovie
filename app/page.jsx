@@ -12,6 +12,7 @@ import { useMovies } from "./hooks/useMovies.js";
 import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { useURLParams } from "./hooks/useSearchQuery.js";
+import { useSelectedId } from "./hooks/useSelectedId.js";
 
 import Loader from "./components/Loader.jsx";
 import Search from "./components/Search.jsx";
@@ -21,8 +22,7 @@ import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
 
 export default function Home() {
   const [query, setQuery] = useURLParams("search");
-  // const [view, setView] = useURLParams("view");
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useSelectedId();
   const { movies, isLoading, error } = useMovies(query);
   const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
   const [rated, setRated] = useLocalStorageState([], "rated");
@@ -31,13 +31,6 @@ export default function Home() {
     watchlisted: true,
     rated: false,
   });
-
-  // useEffect(() => {
-  //   setPanelOpened({
-  //     watchlisted: view === "Watchlist",
-  //     rated: view === "Ratings",
-  //   });
-  // }, [view]);
 
   useEffect(() => {
     // watchlisted is a default opened panel,
