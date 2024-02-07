@@ -11,19 +11,26 @@ import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
 import { useMovies } from "./hooks/useMovies.js";
 import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
-import { useURLParams } from "./hooks/useSearchQuery.js";
+import { useURLParams } from "./hooks/useURLParams.js";
 import { useSelectedId } from "./hooks/useSelectedId.js";
 
 import Loader from "./components/Loader.jsx";
 import Search from "./components/Search.jsx";
 import NavBtn from "./components/NavBtn.jsx";
+import PaginationBtns from "./components/PaginationBtns.jsx";
 import MovieDetailsView from "./components/MovieDetailsView.jsx";
 import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
 
+import { MINIMAL_QUERY_LENGTH } from "./utils/config.js";
+
 export default function Home() {
-  const [query, setQuery] = useURLParams("search");
+  const [query, setQuery] = useURLParams("search", "");
+  const [currentPage, setCurrentPage] = useURLParams("page", null);
   const [selectedId, setSelectedId] = useSelectedId();
-  const { movies, isLoading, error } = useMovies(query);
+  const { movies, isLoading, error, totalSearchResults } = useMovies(
+    query,
+    currentPage
+  );
   const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
   const [rated, setRated] = useLocalStorageState([], "rated");
 
@@ -42,6 +49,7 @@ export default function Home() {
 
   function handleQuery(newQuery) {
     setQuery(newQuery);
+    setCurrentPage(newQuery.length < MINIMAL_QUERY_LENGTH ? null : 1);
 
     if (!isLargeScreen) {
       setSelectedId(null);
@@ -68,6 +76,7 @@ export default function Home() {
   function handleNavBtn(type) {
     setSelectedId(null);
     setQuery("");
+    setCurrentPage(null);
 
     if (type === "Ratings") {
       setPanelOpened({ watchlisted: false, rated: true });
@@ -98,7 +107,7 @@ export default function Home() {
 
   // warning - if you update these numbers, you should also update them in _mixin.scss
   const isMobileScreen = useMediaQuery("(max-width: 500px)");
-  const isMediumScreen = useMediaQuery("(max-width: 960px)") && !isMobileScreen;
+  //const isMediumScreen = useMediaQuery("(max-width: 960px)") && !isMobileScreen;
   const isLargeScreen = useMediaQuery("(min-width: 960px)");
 
   const showRatingsList = panelOpened.rated && !query;
@@ -148,6 +157,12 @@ export default function Home() {
                 isSearchResult={true}
               />
             )}
+            <PaginationBtns
+              totalSearchResults={totalSearchResults}
+              currentPage={Number(currentPage)}
+              onPageNavigation={(nextPage) => setCurrentPage(nextPage)}
+              isLoading={isLoading}
+            />
           </div>
         )}
         {showWatchlist && (
@@ -194,6 +209,12 @@ export default function Home() {
               isLargeScreen={isLargeScreen}
               isMobileScreen={isMobileScreen}
             />
+            <div className="copyright">
+              &copy; Copyright by
+              <a href="https://www.linkedin.com/in/nataliia-moroz-11391135/">
+                Nataliia Moroz
+              </a>
+            </div>
           </div>
         )}
         {showMovieDetailsPlaceholder && <div className="box" />}

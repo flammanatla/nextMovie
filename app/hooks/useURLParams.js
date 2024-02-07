@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 
 import { updateQueryParams } from "../utils/helpers.js";
 
-export const useURLParams = (key) => {
-  const [state, setState] = useState("");
+export const useURLParams = (key, initialState) => {
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
     const searchQuery =
