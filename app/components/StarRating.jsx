@@ -75,7 +75,7 @@ export default function StarRating({
             />
           ))}
         </div>
-        <p style={textStyle}>
+        <p role="user-rating" style={textStyle}>
           {messages.length === maxRating
             ? messages[tempRating ? tempRating - 1 : rating - 1]
             : tempRating || rating || " "}
@@ -109,6 +109,7 @@ function Star({ filled, onRate, onHoverIn, onHoverOut, color, size }) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
+        data-testid="star-svg"
         fill={filled ? color : "none"}
         stroke={color}
       >
@@ -123,25 +124,6 @@ function WatchlistButton({
   onAddWatchlisted,
   isShrinked,
 }) {
-  // const buttonStyle = isWatchlistBtnPressed
-  //   ? {
-  //       borderRadius: isShrinked ? "0.625rem" : "0rem 0.625rem 0.625rem 0rem",
-  //       padding: "0.75rem",
-  //       fontSize: "1.5rem",
-  //       width: "125px",
-  //       border: "#212529 solid 1px",
-  //       background: "#F5C519",
-  //     }
-  //   : {
-  //       borderRadius: isShrinked ? "0.625rem" : "0rem 0.625rem 0.625rem 0rem",
-  //       padding: "0.75rem",
-  //       fontSize: "1.5rem",
-  //       width: "125px",
-  //       border: "#212529 solid 1px",
-  //       background: "#2B3035",
-  //       color: "#F5C519",
-  //     };
-
   const buttonStyle = {
     borderRadius: isShrinked ? "0.625rem" : "0rem 0.625rem 0.625rem 0rem",
     marginBottom: isShrinked ? "0.5rem" : "0rem",
@@ -154,7 +136,11 @@ function WatchlistButton({
   };
 
   return (
-    <button style={buttonStyle} onClick={onAddWatchlisted}>
+    <button
+      data-testid="watchlist-btn"
+      style={buttonStyle}
+      onClick={onAddWatchlisted}
+    >
       {isWatchlistBtnPressed ? "Watchlisted" : "add to Watchlist"}
     </button>
   );

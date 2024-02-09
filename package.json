@@ -11,18 +11,19 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "next": "14.0.4",
-    "react": "^18",
-    "react-dom": "^18",
-    "sass": "^1.69.5",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0"
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "next": "14.0.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "sass": "^1.69.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
