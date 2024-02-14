@@ -13,6 +13,7 @@ import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { useURLParams } from "./hooks/useURLParams.js";
 import { useSelectedId } from "./hooks/useSelectedId.js";
+import { useDebouncer } from "./hooks/useDebouncer.js";
 
 import Loader from "./components/Loader.jsx";
 import Search from "./components/Search.jsx";
@@ -25,10 +26,11 @@ import { MINIMAL_QUERY_LENGTH } from "./utils/config.js";
 
 export default function Home() {
   const [query, setQuery] = useURLParams("search", "");
+  const debouncedQuery = useDebouncer(query);
   const [currentPage, setCurrentPage] = useURLParams("page", null);
   const [selectedId, setSelectedId] = useSelectedId();
   const { movies, isLoading, error, totalSearchResults } = useMovies(
-    query,
+    debouncedQuery,
     currentPage
   );
   const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
