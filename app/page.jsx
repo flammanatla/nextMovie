@@ -169,7 +169,7 @@ export default function Home() {
           <div className="box">
             <MoviesSummary
               title={"Watchlisted Movies"}
-              movies={watchlisted}
+              numMovies={watchlisted.length}
               isUsrRatingVisible={false}
             />
             <MoviesList
@@ -185,7 +185,7 @@ export default function Home() {
           <div className="box">
             <MoviesSummary
               title={"Rated Movies"}
-              movies={rated}
+              numMovies={rated.length}
               isUsrRatingVisible={true}
             />
             <MoviesList

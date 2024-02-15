@@ -81,13 +81,13 @@ export function MoviePreview({
   );
 }
 
-export function MoviesSummary({ title, movies }) {
+export function MoviesSummary({ title, numMovies, isUsrRatingVisible }) {
   return (
     <div className="summary">
-      <h2>{title}</h2>
-      <p>
-        {movies.length} movie{movies.length !== 1 ? "s" : ""}
-      </p>
+      <h2>
+        {title} ({numMovies})
+      </h2>
+      <p>{isUsrRatingVisible && "Your Rating"}</p>
     </div>
   );
 }

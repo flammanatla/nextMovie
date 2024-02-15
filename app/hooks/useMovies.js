@@ -32,7 +32,9 @@ export function useMovies(query, currentPage) {
           const data = await res.json();
 
           if (data.Response === "False") {
-            throw new Error("Movie not found");
+            throw new Error(
+              "Movie not found. Search query length should be minimum 3 symbols."
+            );
           }
           const mappedSearch = data.Search.map((searchItem) =>
             keyLowering(searchItem)
