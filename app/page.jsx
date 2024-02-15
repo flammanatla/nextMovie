@@ -41,15 +41,13 @@ export default function Home() {
     rated: false,
   });
 
-  useEffect(() => {
-    // watchlisted is a default opened panel,
-    // therefore we unselect it when query is entered, and select it back when query is emptied
-    setPanelOpened({ watchlisted: !query, rated: false });
-  }, [query]);
-
   const [previousPanelOpened, setPreviousPanelOpened] = useState({});
 
   function handleQuery(newQuery) {
+    // watchlisted is a default opened panel,
+    // therefore we unselect it when query is entered, and select it back when query is emptied
+    setPanelOpened({ watchlisted: !newQuery, rated: false });
+
     setQuery(newQuery);
     setCurrentPage(newQuery.length < MINIMAL_QUERY_LENGTH ? null : 1);
 
