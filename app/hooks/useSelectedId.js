@@ -7,9 +7,15 @@ export const useSelectedId = () => {
     setState(window.location.hash.slice(1));
   }, []);
 
-  const setValue = (value) => {
-    setState(value);
-    window.location.hash = value || "";
+  const setValue = (newValue) => {
+    setState((state) => {
+      // If the passed value is a callback function,
+      //  then call it with the new state.
+      const valueToUpdate =
+        newValue instanceof Function ? newValue(state) : newValue;
+      window.location.hash = valueToUpdate || "";
+      return valueToUpdate;
+    });
   };
 
   return [state, setValue];

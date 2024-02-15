@@ -11,10 +11,16 @@ export const useURLParams = (key, initialState) => {
     setState(searchQuery);
   }, [key]);
 
-  const setValue = (value) => {
+  const setValue = (newValue) => {
     try {
-      updateQueryParams(key, value || "");
-      setState(value);
+      setState((state) => {
+        // If the passed value is a callback function,
+        //  then call it with the new state.
+        const valueToUpdate =
+          newValue instanceof Function ? newValue(state) : newValue;
+        updateQueryParams(key, valueToUpdate || "");
+        setState(valueToUpdate);
+      });
     } catch (error) {
       console.log(error);
     }

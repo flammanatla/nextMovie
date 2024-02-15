@@ -41,6 +41,14 @@ export default function Home() {
     rated: false,
   });
 
+  // if user open application using link like /?search=harry&page=1,
+  // both panels should be closed
+  useEffect(() => {
+    const initialSearchQuery =
+      new URLSearchParams(window.location.search).get("search") || "";
+    setPanelOpened({ watchlisted: !initialSearchQuery, rated: false });
+  }, []);
+
   const [previousPanelOpened, setPreviousPanelOpened] = useState({});
 
   function handleQuery(newQuery) {
@@ -58,7 +66,6 @@ export default function Home() {
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
-
     if (!isLargeScreen) {
       setPreviousPanelOpened(panelOpened);
       setPanelOpened({ watchlisted: false, rated: false });

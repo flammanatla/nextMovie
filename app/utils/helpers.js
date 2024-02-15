@@ -12,6 +12,8 @@ export function keyLowering(initialObject) {
 
 export function updateQueryParams(param, value) {
   const url = new URL(window.location.href);
+  console.log({ param, value, url });
+
   if (value) {
     url.searchParams.set(param, value);
   } else {
