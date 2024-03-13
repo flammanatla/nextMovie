@@ -8,21 +8,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
 
-import { useMovies } from "./hooks/useMovies.js";
-import { useLocalStorageState } from "./hooks/useLocalStorageState.js";
-import { useMediaQuery } from "./hooks/useMediaQuery.js";
-import { useURLParams } from "./hooks/useURLParams.js";
-import { useSelectedId } from "./hooks/useSelectedId.js";
-import { useDebouncer } from "./hooks/useDebouncer.js";
+import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
+import { useMediaQuery } from "./hooks/useMediaQuery";
+import { useURLParams } from "./hooks/useURLParams";
+import { useSelectedId } from "./hooks/useSelectedId";
+import { useDebouncer } from "./hooks/useDebouncer";
 
-import Loader from "./components/Loader.jsx";
-import Search from "./components/Search.jsx";
-import NavBtn from "./components/NavBtn.jsx";
-import PaginationBtns from "./components/PaginationBtns.jsx";
-import MovieDetailsView from "./components/MovieDetailsView.jsx";
-import { MoviesList, MoviesSummary } from "./components/MoviesList.jsx";
+import Loader from "./components/Loader";
+import Search from "./components/Search";
+import NavBtn from "./components/NavBtn";
+import PaginationBtns from "./components/PaginationBtns";
+import MovieDetailsView from "./components/MovieDetailsView";
+import { MoviesList, MoviesSummary } from "./components/MoviesList";
 
-import { MINIMAL_QUERY_LENGTH } from "./utils/config.js";
+import { MINIMAL_QUERY_LENGTH } from "./utils/config";
 
 export default function Home() {
   const [query, setQuery] = useURLParams("search", "");
@@ -33,10 +33,15 @@ export default function Home() {
     debouncedQuery,
     currentPage
   );
-  const [watchlisted, setWatchlisted] = useLocalStorageState([], "watchlisted");
-  const [rated, setRated] = useLocalStorageState([], "rated");
+  const [watchlisted, setWatchlisted] = useLocalStorageState("watchlisted", []);
+  const [rated, setRated] = useLocalStorageState("rated", []);
 
-  const [panelOpened, setPanelOpened] = useState({
+  type panelOpenedTypes = {
+    watchlisted: boolean;
+    rated: boolean;
+  };
+
+  const [panelOpened, setPanelOpened] = useState<panelOpenedTypes>({
     watchlisted: true,
     rated: false,
   });
@@ -230,16 +235,16 @@ export default function Home() {
   );
 }
 
-function ErrorMessage({ message }) {
+const ErrorMessage = ({ message }: { message: string }): JSX.Element => {
   return (
     <p className="error">
       <span style={{ marginRight: "15px" }}>❌</span>
       {message}
     </p>
   );
-}
+};
 
-function Logo({ isMobileScreen }) {
+const Logo = ({ isMobileScreen }: { isMobileScreen: boolean }): JSX.Element => {
   const svgPath =
     "img/nextMovie_logo" + (isMobileScreen ? "_mob" : "") + ".svg";
 
@@ -248,4 +253,4 @@ function Logo({ isMobileScreen }) {
       <img src={svgPath} alt="Logo" className="header__logo" />
     </a>
   );
-}
+};

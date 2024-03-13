@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-import { API_URL, API_KEY } from "../utils/config.js";
+import { API_URL, API_KEY } from "../utils/config";
 
-import { keyLowering } from "../utils/helpers.js";
+import { keyLowering, getErrorMessage } from "../utils/helpers";
 
 // original code of useEffect from MovieDetails before transforming it to a custom hook
 // useEffect(
@@ -57,11 +57,13 @@ export function useMovieDetails(selectedId) {
 
         setError("");
       } catch (err) {
-        if (err.name !== "AbortError") {
-          console.log(err);
-          setError(err.message);
+        const error = getErrorMessage(err);
+        if (typeof error === "string") {
+          console.log(error);
         }
-        console.log(err);
+        if (typeof error !== "string" && error.name !== "AbortError") {
+          setError(error.message);
+        }
       } finally {
         setIsLoading(false);
       }

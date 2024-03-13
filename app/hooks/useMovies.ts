@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import { API_URL, API_KEY, MINIMAL_QUERY_LENGTH } from "../utils/config.js";
-import { keyLowering } from "../utils/helpers.js";
+import { API_URL, API_KEY, MINIMAL_QUERY_LENGTH } from "../utils/config";
+import { keyLowering } from "../utils/helpers";
 
 export function useMovies(query, currentPage) {
   const [movies, setMovies] = useState([]);

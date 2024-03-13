@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
-export const useLocalStorageState = (initialValue, key) => {
-  const [state, setState] = useState(initialValue);
+type LocalStorageState = string | [];
+type SetLocalStorageState = Dispatch<SetStateAction<string | []>>;
+
+export const useLocalStorageState = (key: string, initialValue: []) => {
+  const [state, setState] = useState<LocalStorageState>(initialValue);
 
   useEffect(() => {
     const storedValue = localStorage.getItem(key);
@@ -13,7 +16,7 @@ export const useLocalStorageState = (initialValue, key) => {
     }
   }, [key]);
 
-  const setValue = (newValue) => {
+  const setValue: SetLocalStorageState = (newValue) => {
     try {
       setState((state) => {
         // If the passed value is a callback function,

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-import { useKey } from "../hooks/useKey.js";
-import { useMovieDetails } from "../hooks/useMovieDetails.js";
+import { useKey } from "../hooks/useKey";
+import { useMovieDetails } from "../hooks/useMovieDetails";
 
-import StarRating from "./StarRating.jsx";
-import Loader from "./Loader.jsx";
+import StarRating from "./StarRating";
+import Loader from "./Loader";
 
 export default function MovieDetailsView({
   selectedId,
