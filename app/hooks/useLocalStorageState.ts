@@ -18,11 +18,11 @@ export const useLocalStorageState = (key: string, initialValue: []) => {
 
   const setValue: SetLocalStorageState = (newValue) => {
     try {
-      setState((state) => {
+      setState((prevState) => {
         // If the passed value is a callback function,
         //  then call it with the new state.
         const valueToStore =
-          newValue instanceof Function ? newValue(state) : newValue;
+          newValue instanceof Function ? newValue(prevState) : newValue;
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
         return valueToStore;
       });

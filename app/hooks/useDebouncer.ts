@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-export const useDebouncer = (query) => {
-  const [debouncer, setDebouncer] = useState("");
+export const useDebouncer = (query: string) => {
+  const [debouncer, setDebouncer] = useState<string>("");
 
   useEffect(() => {
     const timer = setTimeout(() => {

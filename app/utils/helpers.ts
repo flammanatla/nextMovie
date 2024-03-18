@@ -1,7 +1,4 @@
-type KeyLoweringObjectType = Record<
-  string,
-  string | Array<Record<string, string>>
->;
+import { KeyLoweringObjectType } from "./types";
 
 export function keyLowering(initialObject: KeyLoweringObjectType) {
   const mappedObject = Object.entries(
@@ -29,6 +26,9 @@ export function updateQueryParams(param: string, value: string): void {
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
     return { name: error.name, message: error.message };
+  }
+  if (typeof error === "object") {
+    return JSON.stringify(error);
   }
   return String(error);
 }

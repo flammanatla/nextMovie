@@ -1,18 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
+
+type SelectedIdState = string | null;
+type SetSelectedIdState = Dispatch<SetStateAction<string | null>>;
 
 export const useSelectedId = () => {
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<SelectedIdState>(null);
 
   useEffect(() => {
     setState(window.location.hash.slice(1));
   }, []);
 
-  const setValue = (newValue) => {
-    setState((state) => {
+  const setValue: SetSelectedIdState = (newValue) => {
+    setState((prevState) => {
       // If the passed value is a callback function,
       //  then call it with the new state.
       const valueToUpdate =
-        newValue instanceof Function ? newValue(state) : newValue;
+        newValue instanceof Function ? newValue(prevState) : newValue;
       window.location.hash = valueToUpdate || "";
       return valueToUpdate;
     });

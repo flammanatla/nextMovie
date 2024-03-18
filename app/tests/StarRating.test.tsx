@@ -1,11 +1,13 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import StarRating from "./StarRating";
+import StarRating from "../components/StarRating";
 import { describe } from "node:test";
 
 test("loads and displays component", () => {
-  render(<StarRating maxRating={10} />);
+  const props = { maxRating: 10 } as any;
+
+  render(<StarRating {...props} />);
 
   expect(screen.getAllByRole("button")).toHaveLength(11);
 
@@ -27,28 +29,29 @@ test("loads and displays component", () => {
 
 describe("Watchlist button", () => {
   it("tests that add to Watchlist button is pressed and changed its appearance", () => {
-    const onAddWatchlisted = jest.fn();
+    const onAddWatchlistedMocked = jest.fn();
+    const props = { onAddWatchlisted: onAddWatchlistedMocked } as any;
 
-    render(<StarRating onAddWatchlisted={onAddWatchlisted} />);
+    render(<StarRating {...props} />);
 
     fireEvent.click(screen.getByTestId("watchlist-btn"));
 
     expect(screen.getByTestId("watchlist-btn")).toHaveTextContent(
       "Watchlisted"
     );
-    expect(onAddWatchlisted).toHaveBeenCalled();
+    expect(onAddWatchlistedMocked).toHaveBeenCalled();
   });
 
   it("tests that user can click Watchlisted button twice", () => {
-    const onDeleteWatchlisted = jest.fn();
-    const onAddWatchlisted = jest.fn();
+    const onDeleteWatchlistedMocked = jest.fn();
+    const onAddWatchlistedMocked = jest.fn();
 
-    render(
-      <StarRating
-        onAddWatchlisted={onAddWatchlisted}
-        onDeleteWatchlisted={onDeleteWatchlisted}
-      />
-    );
+    const props = {
+      onAddWatchlisted: onAddWatchlistedMocked,
+      onDeleteWatchlisted: onDeleteWatchlistedMocked,
+    } as any;
+
+    render(<StarRating {...props} />);
 
     fireEvent.click(screen.getByTestId("watchlist-btn"));
     fireEvent.click(screen.getByTestId("watchlist-btn"));
@@ -56,7 +59,7 @@ describe("Watchlist button", () => {
     expect(screen.getByTestId("watchlist-btn")).toHaveTextContent(
       "add to Watchlist"
     );
-    expect(onDeleteWatchlisted).toHaveBeenCalled();
+    expect(onDeleteWatchlistedMocked).toHaveBeenCalled();
   });
 });
 
@@ -68,13 +71,15 @@ describe("Stars", () => {
   `(
     "should return number of stars equal to maxRating",
     ({ maxRating, expectedStars }) => {
-      const onSetRating = jest.fn();
+      const onSetRatingMocked = jest.fn();
 
-      render(<StarRating maxRating={maxRating} onSetRating={onSetRating} />);
+      const props = { maxRating: 10, onSetRating: onSetRatingMocked } as any;
+
+      render(<StarRating {...props} />);
 
       fireEvent.click(screen.getAllByRole("button")[maxRating - 1]);
 
-      expect(onSetRating).toHaveBeenCalledWith(expectedStars);
+      expect(onSetRatingMocked).toHaveBeenCalledWith(expectedStars);
       expect(screen.getByRole("user-rating")).toHaveTextContent(expectedStars);
     }
   );
@@ -82,7 +87,10 @@ describe("Stars", () => {
   it("tests that default rating fills equal amount of stars with color", () => {
     const maxRating = 5;
     const defaultRating = 2;
-    render(<StarRating maxRating={5} defaultRating={defaultRating} />);
+
+    const props = { maxRating, defaultRating } as any;
+
+    render(<StarRating {...props} />);
 
     const stars = screen.getAllByTestId("star-svg");
     expect(stars).toHaveLength(maxRating);
@@ -98,7 +106,9 @@ describe("Stars", () => {
   it("tests that mouse hover over the star change its fill attribute", () => {
     const hoveredStar = 2;
 
-    render(<StarRating maxRating={5} />);
+    const props = { maxRating: 5 } as any;
+
+    render(<StarRating {...props} />);
 
     const stars = screen.getAllByTestId("star-svg");
 

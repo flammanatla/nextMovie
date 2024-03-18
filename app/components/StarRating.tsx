@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 
-export default function StarRating({
+import {
+  WatchlistButtonProps,
+  StarProps,
+  StarRatingProps,
+} from "./StarRating.types";
+
+const StarRating = ({
   maxRating = 5,
   color = "#fcc419",
   size = "48",
@@ -12,18 +18,18 @@ export default function StarRating({
   onAddWatchlisted,
   onDeleteWatchlisted,
   isWatchlisted,
-}) {
-  const [rating, setRating] = useState(defaultRating);
-  const [tempRating, setTempRating] = useState(0);
+}: StarRatingProps): JSX.Element => {
+  const [rating, setRating] = useState<number>(defaultRating);
+  const [tempRating, setTempRating] = useState<number>(0);
   const [isWatchlistBtnPressed, setIsWatchlistBtnPressed] =
-    useState(isWatchlisted);
+    useState<boolean>(isWatchlisted);
 
-  function handleRating(rating) {
+  function handleRating(rating: number) {
     setRating(rating);
     onSetRating(rating);
   }
 
-  function handleTempRating(rating) {
+  function handleTempRating(rating: number) {
     setTempRating(rating);
   }
 
@@ -43,7 +49,7 @@ export default function StarRating({
     fontSize: `${size}px`,
   };
 
-  const containerStyle = {
+  const containerStyle: CSSProperties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -54,7 +60,7 @@ export default function StarRating({
     flexDirection: isShrinked ? "column" : "row",
   };
 
-  const starContainerStyle = {
+  const starContainerStyle: CSSProperties = {
     display: "flex",
     padding: "0.6rem 0rem 0.6rem 1.25rem",
   };
@@ -88,9 +94,18 @@ export default function StarRating({
       />
     </div>
   );
-}
+};
 
-function Star({ filled, onRate, onHoverIn, onHoverOut, color, size }) {
+export default StarRating;
+
+const Star = ({
+  filled,
+  onRate,
+  onHoverIn,
+  onHoverOut,
+  color,
+  size,
+}: StarProps): JSX.Element => {
   const starStyle = {
     width: `${size}px`,
     height: `${size}px`,
@@ -117,14 +132,14 @@ function Star({ filled, onRate, onHoverIn, onHoverOut, color, size }) {
       </svg>
     </span>
   );
-}
+};
 
-function WatchlistButton({
+const WatchlistButton = ({
   isWatchlistBtnPressed,
   onAddWatchlisted,
   isShrinked,
-}) {
-  const buttonStyle = {
+}: WatchlistButtonProps): JSX.Element => {
+  const buttonStyle: CSSProperties = {
     borderRadius: isShrinked ? "0.625rem" : "0rem 0.625rem 0.625rem 0rem",
     marginBottom: isShrinked ? "0.5rem" : "0rem",
     padding: "0.75rem",
@@ -144,4 +159,4 @@ function WatchlistButton({
       {isWatchlistBtnPressed ? "Watchlisted" : "add to Watchlist"}
     </button>
   );
-}
+};

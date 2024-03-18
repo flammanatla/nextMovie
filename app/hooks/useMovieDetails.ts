@@ -19,10 +19,12 @@ import { keyLowering, getErrorMessage } from "../utils/helpers";
 //   [selectedId]
 // );
 
-export function useMovieDetails(selectedId) {
-  const [movie, setMovie] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+type MovieState = Record<string, string | Array<Record<string, string>>> | null;
+
+export function useMovieDetails(selectedId: string) {
+  const [movie, setMovie] = useState<MovieState>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const controller = new AbortController();

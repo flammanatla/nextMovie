@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 
 import { API_URL, API_KEY, MINIMAL_QUERY_LENGTH } from "../utils/config";
-import { keyLowering } from "../utils/helpers";
+import { keyLowering, getErrorMessage } from "../utils/helpers";
 
-export function useMovies(query, currentPage) {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [totalSearchResults, setTotalSearchResults] = useState(null);
+import { KeyLoweringObjectType } from "../utils/types";
+
+export function useMovies(query: string, currentPage: number) {
+  const [movies, setMovies] = useState<Array<Record<string, string>>>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [totalSearchResults, setTotalSearchResults] = useState<number | null>(
+    null
+  );
 
   //to do: rewrite as an eventListener since we don't need to do data fetching on the mount anymore
   useEffect(
@@ -36,18 +40,21 @@ export function useMovies(query, currentPage) {
               "Movie not found. Search query length should be minimum 3 symbols."
             );
           }
-          const mappedSearch = data.Search.map((searchItem) =>
-            keyLowering(searchItem)
+          const mappedSearch = data.Search.map(
+            (searchItem: KeyLoweringObjectType) => keyLowering(searchItem)
           );
 
           setMovies(mappedSearch);
           setTotalSearchResults(data.totalResults);
           setError("");
         } catch (err) {
-          if (err.name !== "AbortError") {
-            console.log(err);
-            setError(err.message);
-            setTotalSearchResults("");
+          const error = getErrorMessage(err);
+          if (typeof error === "string") {
+            console.log(error);
+          }
+          if (typeof error !== "string" && error.name !== "AbortError") {
+            setError(error.message);
+            setTotalSearchResults(null);
           }
         } finally {
           setIsLoading(false);
@@ -57,7 +64,7 @@ export function useMovies(query, currentPage) {
       if (query.length < MINIMAL_QUERY_LENGTH) {
         setMovies([]);
         setError("");
-        setTotalSearchResults("");
+        setTotalSearchResults(null);
         return;
       }
 

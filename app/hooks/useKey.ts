@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-export function useKey(key, action) {
+export function useKey(key: string, action: () => void): void {
   useEffect(
     function () {
-      function closeByEsc(e) {
+      function closeByEsc(e: KeyboardEvent): void {
         if (e.code.toLowerCase() === key.toLowerCase()) {
           action();
         }
