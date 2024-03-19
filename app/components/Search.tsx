@@ -1,4 +1,10 @@
-export default function Search({ query, setQuery, isShrinked }) {
+import { SearchProps } from "./Search.types";
+
+export default function Search({
+  query,
+  setQuery,
+  isShrinked,
+}: SearchProps): JSX.Element {
   return (
     <input
       className="search"

@@ -1,14 +1,20 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import {
+  MovieListProps,
+  MoviePreviewProps,
+  MoviesSummaryProps,
+} from "./Movie.types";
+
 export function MoviesList({
   movies,
-  onDeleteWatchlisted,
-  isRemovable,
-  isUsrRatingVisible,
   onSelectMovie,
   isSearchResult,
-}) {
+  onDeleteWatchlisted,
+  isRemovable = false,
+  isUsrRatingVisible = false,
+}: MovieListProps): JSX.Element {
   return (
     <ul className="list list-movies">
       {movies.map((movie) => (
@@ -33,7 +39,7 @@ export function MoviePreview({
   isUsrRatingVisible,
   onSelectMovie,
   isSearchResult,
-}) {
+}: MoviePreviewProps): JSX.Element {
   return (
     <li className="movie" onClick={() => onSelectMovie(movie.imdbID)}>
       <a className="movie__link" href={"#" + movie.imdbID}>
@@ -47,9 +53,7 @@ export function MoviePreview({
           <div>
             <p>{movie.year}</p>
             <p className="text text--darker">{movie.type}</p>
-            {isSearchResult ? (
-              ""
-            ) : (
+            {isSearchResult === false && "imdbRating" in movie && (
               <p className="text text--darker">
                 Imdb Rating: {Number(movie.imdbRating)}
               </p>
@@ -57,12 +61,10 @@ export function MoviePreview({
           </div>
         </div>
         <div>
-          {isUsrRatingVisible ? (
+          {isUsrRatingVisible && "userRating" in movie && (
             <button className="user-rating">{movie.userRating}</button>
-          ) : (
-            <></>
           )}
-          {isRemovable ? (
+          {isRemovable && onDeleteWatchlisted && (
             <button
               className="btn-delete"
               onClick={(e) => {
@@ -72,8 +74,6 @@ export function MoviePreview({
             >
               <FontAwesomeIcon icon={faTrash} />
             </button>
-          ) : (
-            ""
           )}
         </div>
       </a>
@@ -81,7 +81,11 @@ export function MoviePreview({
   );
 }
 
-export function MoviesSummary({ title, numMovies, isUsrRatingVisible }) {
+export function MoviesSummary({
+  title,
+  numMovies,
+  isUsrRatingVisible,
+}: MoviesSummaryProps): JSX.Element {
   return (
     <div className="summary">
       <h2>

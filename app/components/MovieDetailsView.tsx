@@ -6,6 +6,8 @@ import { useMovieDetails } from "../hooks/useMovieDetails";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
 
+import { ListedMovie, MovieDetailsViewProps } from "./Movie.types";
+
 export default function MovieDetailsView({
   selectedId,
   onCloseMovie,
@@ -16,17 +18,19 @@ export default function MovieDetailsView({
   rated,
   isLargeScreen,
   isMobileScreen,
-}) {
+}: MovieDetailsViewProps): JSX.Element {
   const { movie, isLoading } = useMovieDetails(selectedId);
 
   const isWatchlisted = watchlisted
-    .map((movie) => movie.imdbID)
+    .map((movie: ListedMovie) => movie.imdbID)
     .includes(selectedId);
 
-  const isRated = rated.map((movie) => movie.imdbID).includes(selectedId);
+  const isRated = rated
+    .map((movie: ListedMovie) => movie.imdbID)
+    .includes(selectedId);
 
   const watchedUserRating = rated.find(
-    (movie) => movie.imdbID === selectedId
+    (movie: ListedMovie) => movie.imdbID === selectedId
   )?.userRating;
 
   useKey("Escape", onCloseMovie);
@@ -66,8 +70,8 @@ export default function MovieDetailsView({
     ratings,
   } = movie;
 
-  function handleAddRating(rating) {
-    const newRatedMovie = {
+  function handleAddRating(rating: number) {
+    const newRatedMovie: ListedMovie = {
       imdbID: selectedId,
       title,
       year,
@@ -83,7 +87,7 @@ export default function MovieDetailsView({
   }
 
   function handleAddToWatchlist() {
-    const newWatchlistedMovie = {
+    const newWatchlistedMovie: ListedMovie = {
       imdbID: selectedId,
       title,
       year,
@@ -152,19 +156,19 @@ export default function MovieDetailsView({
           <div className="labels">
             {movie.ratings
               .map((rating) => {
-                let parsedScores = [];
                 if (rating.Source.includes("Internet Movie Database")) {
-                  parsedScores.push(`IMDB: ${rating.Value}`);
+                  return `IMDB: ${rating.Value}`;
                 } else if (rating.Source.includes("Rotten")) {
-                  parsedScores.push(`Rotten Tomatoes: ${rating.Value}`);
+                  return `Rotten Tomatoes: ${rating.Value}`;
                 } else if (rating.Source.includes("Metacritic")) {
-                  parsedScores.push(`Metacritic: ${rating.Value}`);
+                  return `Metacritic: ${rating.Value}`;
+                } else {
+                  return ``;
                 }
-                return parsedScores;
               })
-              .map((rating) => (
-                <label className="label" key={rating}>
-                  {rating}
+              .map((parsedRating) => (
+                <label className="label" key={parsedRating}>
+                  {parsedRating}
                 </label>
               ))}
           </div>

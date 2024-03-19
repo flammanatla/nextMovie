@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 
 import { API_URL, API_KEY } from "../utils/config";
 
-import { keyLowering, getErrorMessage } from "../utils/helpers";
+import { lowercaseKey, getErrorMessage } from "../utils/helpers";
+
+import { Movie } from "../components/Movie.types";
 
 // original code of useEffect from MovieDetails before transforming it to a custom hook
 // useEffect(
@@ -19,7 +21,8 @@ import { keyLowering, getErrorMessage } from "../utils/helpers";
 //   [selectedId]
 // );
 
-type MovieState = Record<string, string | Array<Record<string, string>>> | null;
+// type MovieState = Record<string, string | Array<Record<string, string>>> | null;
+type MovieState = Movie | null;
 
 export function useMovieDetails(selectedId: string) {
   const [movie, setMovie] = useState<MovieState>(null);
@@ -47,13 +50,12 @@ export function useMovieDetails(selectedId: string) {
           );
         }
 
-        const data = await res.json();
+        const data: object = await res.json();
+        const mappedMovie = lowercaseKey(data) as Movie;
 
-        if (data.Response === "False") {
+        if (mappedMovie.response === "False") {
           throw new Error("Movie not found");
         }
-
-        const mappedMovie = keyLowering(data);
 
         setMovie(mappedMovie);
 

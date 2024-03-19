@@ -8,6 +8,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar, faBookmark } from "@fortawesome/free-regular-svg-icons";
 
+import { ListedMovie } from "./components/Movie.types";
+
 import { useMovies } from "./hooks/useMovies";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import { useMediaQuery } from "./hooks/useMediaQuery";
@@ -27,24 +29,30 @@ import { MINIMAL_QUERY_LENGTH } from "./utils/config";
 export default function Home() {
   const [query, setQuery] = useURLParams("search", "");
   const debouncedQuery = useDebouncer(query);
-  const [currentPage, setCurrentPage] = useURLParams("page", null);
+  const [currentPage, setCurrentPage] = useURLParams("page", "");
   const [selectedId, setSelectedId] = useSelectedId();
   const { movies, isLoading, error, totalSearchResults } = useMovies(
     debouncedQuery,
-    currentPage
+    Number(currentPage)
   );
-  const [watchlisted, setWatchlisted] = useLocalStorageState("watchlisted", []);
-  const [rated, setRated] = useLocalStorageState("rated", []);
+  const [watchlisted, setWatchlisted] = useLocalStorageState<ListedMovie>(
+    "watchlisted",
+    []
+  );
+  const [rated, setRated] = useLocalStorageState<ListedMovie>("rated", []);
 
-  type panelOpenedTypes = {
+  type PanelOpenedTypes = {
     watchlisted: boolean;
     rated: boolean;
   };
 
-  const [panelOpened, setPanelOpened] = useState<panelOpenedTypes>({
+  const [panelOpened, setPanelOpened] = useState<PanelOpenedTypes>({
     watchlisted: true,
     rated: false,
   });
+
+  const [previousPanelOpened, setPreviousPanelOpened] =
+    useState<PanelOpenedTypes | null>(null);
 
   // if user open application using link like /?search=harry&page=1,
   // both panels should be closed
@@ -54,22 +62,20 @@ export default function Home() {
     setPanelOpened({ watchlisted: !initialSearchQuery, rated: false });
   }, []);
 
-  const [previousPanelOpened, setPreviousPanelOpened] = useState({});
-
-  function handleQuery(newQuery) {
+  function handleQuery(newQuery: string): void {
     // watchlisted is a default opened panel,
     // therefore we unselect it when query is entered, and select it back when query is emptied
     setPanelOpened({ watchlisted: !newQuery, rated: false });
 
     setQuery(newQuery);
-    setCurrentPage(newQuery.length < MINIMAL_QUERY_LENGTH ? null : 1);
+    setCurrentPage(newQuery.length < MINIMAL_QUERY_LENGTH ? "" : "1");
 
     if (!isLargeScreen) {
       setSelectedId(null);
     }
   }
 
-  function handleSelectMovie(id) {
+  function handleSelectMovie(id: string): void {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
     if (!isLargeScreen) {
       setPreviousPanelOpened(panelOpened);
@@ -77,18 +83,18 @@ export default function Home() {
     }
   }
 
-  function handleCloseMovie() {
+  function handleCloseMovie(): void {
     setSelectedId(null);
 
-    if (!isLargeScreen) {
+    if (!isLargeScreen && previousPanelOpened) {
       setPanelOpened(previousPanelOpened);
     }
   }
 
-  function handleNavBtn(type) {
+  function handleNavBtn(type: string): void {
     setSelectedId(null);
     setQuery("");
-    setCurrentPage(null);
+    setCurrentPage("");
 
     if (type === "Ratings") {
       setPanelOpened({ watchlisted: false, rated: true });
@@ -99,11 +105,11 @@ export default function Home() {
     }
   }
 
-  function handleAddWatchlisted(movie) {
+  function handleAddWatchlisted(movie: ListedMovie): void {
     setWatchlisted((watchlisted) => [...watchlisted, movie]);
   }
 
-  function handleAddRated(movie) {
+  function handleAddRated(movie: ListedMovie): void {
     // filter out movie in case if it is already in the list, and add it again
     setRated((rated) => [
       ...rated.filter((ratedMovie) => ratedMovie.imdbID !== movie.imdbID),
@@ -111,7 +117,7 @@ export default function Home() {
     ]);
   }
 
-  function handleDeletedWatchlisted(id) {
+  function handleDeletedWatchlisted(id: string): void {
     setWatchlisted((watchlisted) =>
       watchlisted.filter((movie) => movie.imdbID !== id)
     );
@@ -163,18 +169,22 @@ export default function Home() {
             {isLoading && <Loader />}
             {error && <ErrorMessage message={error} />}
             {!isLoading && !error && (
-              <MoviesList
-                movies={movies}
-                onSelectMovie={handleSelectMovie}
-                isSearchResult={true}
-              />
+              <>
+                <MoviesList
+                  movies={movies}
+                  onSelectMovie={handleSelectMovie}
+                  isSearchResult={true}
+                />
+                <PaginationBtns
+                  totalSearchResults={totalSearchResults || 0}
+                  currentPage={Number(currentPage)}
+                  onPageNavigation={(nextPage) =>
+                    setCurrentPage(String(nextPage))
+                  }
+                  isLoading={isLoading}
+                />
+              </>
             )}
-            <PaginationBtns
-              totalSearchResults={totalSearchResults}
-              currentPage={Number(currentPage)}
-              onPageNavigation={(nextPage) => setCurrentPage(nextPage)}
-              isLoading={isLoading}
-            />
           </div>
         )}
         {showWatchlist && (
@@ -190,6 +200,7 @@ export default function Home() {
               onSelectMovie={handleSelectMovie}
               isRemovable={true}
               isUsrRatingVisible={false}
+              isSearchResult={false}
             />
           </div>
         )}
@@ -205,6 +216,7 @@ export default function Home() {
               onSelectMovie={handleSelectMovie}
               isRemovable={false}
               isUsrRatingVisible={true}
+              isSearchResult={false}
             />
           </div>
         )}

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 
 import { API_URL, API_KEY, MINIMAL_QUERY_LENGTH } from "../utils/config";
-import { keyLowering, getErrorMessage } from "../utils/helpers";
+import { lowercaseKey, getErrorMessage } from "../utils/helpers";
 
-import { KeyLoweringObjectType } from "../utils/types";
+import { SearchMovie } from "../components/Movie.types";
 
 export function useMovies(query: string, currentPage: number) {
-  const [movies, setMovies] = useState<Array<Record<string, string>>>([]);
+  console.log({ currentPage });
+  const [movies, setMovies] = useState<Array<SearchMovie>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [totalSearchResults, setTotalSearchResults] = useState<number | null>(
@@ -33,7 +34,11 @@ export function useMovies(query: string, currentPage: number) {
             throw new Error("Something went wrong with fetching movies data");
           }
 
-          const data = await res.json();
+          const data: {
+            Response: "True" | "False";
+            Search: object[];
+            totalResults: string;
+          } = await res.json();
 
           if (data.Response === "False") {
             throw new Error(
@@ -41,11 +46,11 @@ export function useMovies(query: string, currentPage: number) {
             );
           }
           const mappedSearch = data.Search.map(
-            (searchItem: KeyLoweringObjectType) => keyLowering(searchItem)
+            (searchItem) => lowercaseKey(searchItem) as SearchMovie
           );
 
           setMovies(mappedSearch);
-          setTotalSearchResults(data.totalResults);
+          setTotalSearchResults(Number(data.totalResults));
           setError("");
         } catch (err) {
           const error = getErrorMessage(err);

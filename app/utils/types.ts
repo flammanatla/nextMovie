@@ -1,4 +1,3 @@
-export type KeyLoweringObjectType = Record<
-  string,
-  string | Array<Record<string, string>>
->;
+export interface lowercaseKeyObjectType {
+  [key: string]: unknown;
+}

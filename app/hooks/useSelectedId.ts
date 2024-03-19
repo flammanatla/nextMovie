@@ -1,10 +1,9 @@
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 
-type SelectedIdState = string | null;
 type SetSelectedIdState = Dispatch<SetStateAction<string | null>>;
 
-export const useSelectedId = () => {
-  const [state, setState] = useState<SelectedIdState>(null);
+export const useSelectedId = (): [string | null, SetSelectedIdState] => {
+  const [state, setState] = useState<string | null>(null);
 
   useEffect(() => {
     setState(window.location.hash.slice(1));

@@ -1,6 +1,12 @@
+import { NavBtnProps } from "./NavBtn.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function NavBtn({ icon, isActive, onNavBar, name }) {
+export default function NavBtn({
+  icon,
+  isActive,
+  onNavBar,
+  name,
+}: NavBtnProps): JSX.Element {
   return (
     <button className="nav-bar__btn" onClick={() => onNavBar(name)}>
       <FontAwesomeIcon

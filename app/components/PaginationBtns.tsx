@@ -1,3 +1,5 @@
+import { PaginationBtnsProps } from "./PaginationBtns.types";
+
 import { RESULTS_PER_PAGE } from "../utils/config";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,7 +10,7 @@ export default function PaginationBtns({
   currentPage,
   onPageNavigation,
   isLoading,
-}) {
+}: PaginationBtnsProps): JSX.Element {
   const numPages = Math.ceil(totalSearchResults / RESULTS_PER_PAGE);
 
   const backBtn = (
@@ -35,7 +37,7 @@ export default function PaginationBtns({
 
   // do not show pagination if search results are loading
   if (isLoading) {
-    return "";
+    return <></>;
   }
 
   // current page 1, there are other pages
@@ -59,5 +61,5 @@ export default function PaginationBtns({
   }
 
   // current page 1, there are no more pages
-  return "";
+  return <></>;
 }

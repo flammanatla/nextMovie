@@ -1,14 +1,14 @@
-import { KeyLoweringObjectType } from "./types";
+import { lowercaseKeyObjectType } from "./types";
 
-export function keyLowering(initialObject: KeyLoweringObjectType) {
+export function lowercaseKey<T extends object>(initialObject: T): T {
   const mappedObject = Object.entries(
     initialObject
-  ).reduce<KeyLoweringObjectType>((finalObject, [key, value]) => {
+  ).reduce<lowercaseKeyObjectType>((finalObject, [key, value]) => {
     const mappedKey = key.slice(0, 1).toLowerCase() + key.slice(1);
     finalObject[mappedKey] = value;
     return finalObject;
   }, {});
-  return mappedObject;
+  return mappedObject as T;
 }
 
 export function updateQueryParams(param: string, value: string): void {

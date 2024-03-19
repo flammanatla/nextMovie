@@ -2,11 +2,13 @@
 
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
-type LocalStorageState = string | [];
-type SetLocalStorageState = Dispatch<SetStateAction<string | []>>;
+type SetLocalStorageState<T> = Dispatch<SetStateAction<T[]>>;
 
-export const useLocalStorageState = (key: string, initialValue: []) => {
-  const [state, setState] = useState<LocalStorageState>(initialValue);
+export const useLocalStorageState = <T>(
+  key: string,
+  initialValue: T[]
+): [T[], SetLocalStorageState<T>] => {
+  const [state, setState] = useState<T[]>(initialValue);
 
   useEffect(() => {
     const storedValue = localStorage.getItem(key);
@@ -16,7 +18,7 @@ export const useLocalStorageState = (key: string, initialValue: []) => {
     }
   }, [key]);
 
-  const setValue: SetLocalStorageState = (newValue) => {
+  const setValue: SetLocalStorageState<T> = (newValue) => {
     try {
       setState((prevState) => {
         // If the passed value is a callback function,

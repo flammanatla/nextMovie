@@ -2,14 +2,13 @@ import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
 import { updateQueryParams } from "../utils/helpers";
 
-type URLParamsState = string | null;
-type SetURLParamsState = Dispatch<SetStateAction<string | null>>;
+type SetURLParamsState = Dispatch<SetStateAction<string>>;
 
 export const useURLParams = (
   key: string,
-  initialState: URLParamsState
-): [URLParamsState, SetURLParamsState] => {
-  const [state, setState] = useState<URLParamsState>(initialState);
+  initialState: string
+): [string, SetURLParamsState] => {
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
     const searchQuery =
