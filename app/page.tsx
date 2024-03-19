@@ -169,21 +169,21 @@ export default function Home() {
             {isLoading && <Loader />}
             {error && <ErrorMessage message={error} />}
             {!isLoading && !error && (
-              <>
-                <MoviesList
-                  movies={movies}
-                  onSelectMovie={handleSelectMovie}
-                  isSearchResult={true}
-                />
-                <PaginationBtns
-                  totalSearchResults={totalSearchResults || 0}
-                  currentPage={Number(currentPage)}
-                  onPageNavigation={(nextPage) =>
-                    setCurrentPage(String(nextPage))
-                  }
-                  isLoading={isLoading}
-                />
-              </>
+              <MoviesList
+                movies={movies}
+                onSelectMovie={handleSelectMovie}
+                isSearchResult={true}
+              />
+            )}
+            {totalSearchResults && (
+              <PaginationBtns
+                totalSearchResults={totalSearchResults}
+                currentPage={Number(currentPage)}
+                onPageNavigation={(nextPage) =>
+                  setCurrentPage(String(nextPage))
+                }
+                isLoading={isLoading}
+              />
             )}
           </div>
         )}
